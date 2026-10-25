@@ -32,3 +32,14 @@ it('annotation storage and protocol retain their existing namespace', () => {
   assert.ok(read('src/annotations/core.js').includes("export const SOURCE = 'dsh-codex-annotations'"))
   assert.ok(read('src/annotations/core.js').includes('export const STORAGE_PREFIX = `${SOURCE}:v1:`'))
 })
+
+it('admits only tested DSH hosts and keeps the isolated matrix aligned', () => {
+  const pkg = JSON.parse(read('package.json'))
+  const supported = ['0.2.1-rc.1', '0.2.1-rc.2', '0.2.1-rc.3']
+  // Without engines.dsh, native DSH admission evaluates these peer ranges.
+  assert.equal(pkg.engines.dsh, undefined)
+  for (const [name, range] of Object.entries(pkg.peerDependencies)) {
+    if (name.startsWith('@deepseek-ai/dsh-')) assert.deepEqual(range.split(' || '), supported, name)
+  }
+  assert.ok(read('scripts/test-compatibility.mjs').includes(`const supported = ${JSON.stringify(supported).replaceAll('"', "'").replaceAll(',', ', ')}`))
+})

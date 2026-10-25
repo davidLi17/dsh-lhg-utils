@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 const lock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8'))
-const supported = ['0.2.1-rc.1', '0.2.1-rc.2']
+const supported = ['0.2.1-rc.1', '0.2.1-rc.2', '0.2.1-rc.3']
 const versions = process.argv.slice(2)
 if (!versions.length) versions.push(...supported)
 if (versions.some(version => !supported.includes(version))) throw new Error('请使用指定的 DSH 候选版本')
@@ -72,7 +72,7 @@ for (const version of versions) {
       writeFileSync(log, `${readFileSync(log, 'utf8')}\n$ node ${args.join(' ')}\n${result.stdout ?? ''}${result.stderr ?? ''}`, 'utf8')
       if (result.error || result.status !== 0) throw new Error(result.error?.message ?? `${args[0]} 失败；详见 ${log}`)
     }
-    run([process.env.npm_execpath, 'install', '--ignore-scripts', '--legacy-peer-deps', '--no-audit', '--no-fund'])
+    run([process.env.npm_execpath, 'install', '--no-fund'])
     for (const name of seen) {
       const installed = JSON.parse(readFileSync(join(directory, 'node_modules', name, 'package.json'), 'utf8'))
       if (installed.version !== version) throw new Error(`${name} 误装为 ${installed.version}`)

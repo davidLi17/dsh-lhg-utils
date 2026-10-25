@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.6] - 2026-10-25
+
+- Extend verified host compatibility to DSH `0.2.1-rc.3`, retaining rc.1/rc.2. Update development host packages and the isolated compatibility matrix; do not admit untested 0.2.x versions.
+- Adapt upstream host-compatibility work (`4b55f318`, `f0977695`) without changing side-question tools, output budgets, or prompts.
+
 ## [1.2.5] - 2026-10-24
 
 - Fix `/recap` availability accessing the input service across an uninjected session scope, which could hide the entire native slash-command list. Resolve the host service through its injected scope and preserve native commands.
