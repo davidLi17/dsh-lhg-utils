@@ -2,6 +2,10 @@ import type { Translate } from '@deepseek-ai/dsh-client-ui-slots';
 export declare const NS = "michengai.btw";
 export declare const zh: {
     'locale.id': string;
+    'theme.switch': string;
+    'theme.light': string;
+    'theme.dark': string;
+    'theme.system': string;
     'voice.idle': string;
     'voice.requesting': string;
     'voice.recording': string;

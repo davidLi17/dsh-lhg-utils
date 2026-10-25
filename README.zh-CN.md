@@ -1,8 +1,12 @@
-# DSH-LHG-Utils（v1.2.6）
+# DSH-LHG-Utils（v1.2.7）
 
 [English](README.md)
 
 **LHG Utils** 是模块独立的 DeepSeek Harness 工具箱，包含 BTW 独立旁问、Codex 原文批注和原生思考强度快捷键。
+
+## 快速切换外观
+
+会话标题栏右侧新增官方线性图标，点开可选择「浅色 / 深色 / 跟随系统」，当前选项打勾。直接共用并同步官方外观设置，由宿主负责保存与跟随系统；无 emoji、不另存配置、不新增快捷键。
 
 ## /recap
 

@@ -5,6 +5,10 @@ import { MAX_QUESTION_LENGTH, MAX_REFERENCE_LENGTH } from './limits'
 export const NS = 'michengai.btw'
 export const zh = {
   'locale.id': 'zh',
+  'theme.switch': '切换外观：{theme}',
+  'theme.light': '浅色',
+  'theme.dark': '深色',
+  'theme.system': '跟随系统',
   'voice.idle': "语音输入",
   'voice.requesting': "正在准备…",
   'voice.recording': "停止录音",
@@ -107,6 +111,10 @@ export type BtwTranslate = Translate<MessageKey>
 export type BtwLocale = 'zh' | 'en'
 export const en: Record<MessageKey, string> = {
   'locale.id': 'en',
+  'theme.switch': 'Switch appearance: {theme}',
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
+  'theme.system': 'System',
   'voice.idle': "Voice input",
   'voice.requesting': "Preparing…",
   'voice.recording': "Stop recording",

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.7] - 2026-10-25
+
+- Add a compact appearance switch to the session header’s native right-side utilities slot. Reuse the official Light, Dark and System line icons, native menu/tooltip and selected check.
+- Read and write only the official theme service, with live settings synchronization and native persistence/system resolution. No emoji, extra preference store, global theme CSS or new shortcut; existing modules remain independent.
+
 ## [1.2.6] - 2026-10-25
 
 - Extend verified host compatibility to DSH `0.2.1-rc.3`, retaining rc.1/rc.2. Update development host packages and the isolated compatibility matrix; do not admit untested 0.2.x versions.

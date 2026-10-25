@@ -43,7 +43,8 @@ export function Button({
   children,
   className,
   type = 'button',
-}: {
+  ...rest
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: string
   disabled?: boolean
   onClick?: () => void
@@ -53,6 +54,7 @@ export function Button({
 }): ReactElement {
   return (
     <button
+      {...rest}
       type={type}
       disabled={disabled}
       onClick={onClick}
@@ -62,3 +64,25 @@ export function Button({
     </button>
   )
 }
+
+// Wiring-only mock: native Menu focus/keys require separate host-component or browser verification.
+export function Menu({ open, anchor, items = [], selectedId, onSelect, onClose, align, portal, autoFocus }: {
+  open: boolean; anchor: ReactNode; items?: { id: string; label: ReactNode; icon?: ReactNode }[];
+  selectedId?: string; onSelect?: (id: string) => void; onClose: () => void;
+  align?: string; portal?: boolean; autoFocus?: boolean;
+}): ReactElement {
+  return <span data-align={align} data-portal={String(portal)} data-autofocus={String(autoFocus)}>
+    {anchor}
+    {open && <div role="menu"><button data-dismiss onClick={onClose}>dismiss</button>{items.map(item =>
+      <button key={item.id} role="menuitem" aria-current={item.id === selectedId ? 'true' : undefined} onClick={() => onSelect?.(item.id)}>
+        {item.icon}{item.label}
+      </button>)}
+    </div>}
+  </span>
+}
+export function Tooltip({ children, label }: { children: ReactElement; label: string }): ReactElement {
+  return <span title={label}>{children}</span>
+}
+export function IconLightOutlineMedium(): ReactElement { return <svg data-icon="light" /> }
+export function IconDarkOutlineMedium(): ReactElement { return <svg data-icon="dark" /> }
+export function IconFollowsystemOutlineMedium(): ReactElement { return <svg data-icon="system" /> }

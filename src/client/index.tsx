@@ -23,6 +23,7 @@ import { SelectionAsk } from './SelectionAsk'
 import { createVoiceBridge, mountVoiceBridge, type VoiceBridge } from './voice/service'
 import { CSS } from './styles'
 import { en, zh, NS, normalizeLocale, type BtwTranslate } from '../locales'
+import { apply as applyThemeSwitcher } from './theme-switcher'
 
 export const inject = ['slots', 'remote', 'remote.commands', 'locale', 'conversation', 'sessions', 'uiConversation', 'inputTriggers']
 
@@ -126,6 +127,7 @@ type BtwBridge = {
 export async function apply(ctx: Context, config: unknown = {}): Promise<void> {
   applyRecap(ctx)
   ctx.effect(() => ctx.locale.register(NS, { zh, en }))
+  applyThemeSwitcher(ctx)
   const sessions = ctx.get('sessions') as unknown as ISessions
   const listeners = new Set<() => void>()
   const bridge: BtwBridge = {

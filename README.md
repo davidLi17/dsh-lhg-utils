@@ -1,8 +1,12 @@
-# DSH-LHG-Utils (v1.2.6)
+# DSH-LHG-Utils (v1.2.7)
 
 [简体中文](README.zh-CN.md)
 
 **LHG Utils** is a modular DeepSeek Harness toolbox: BTW side questions, Codex-style text annotations, and native reasoning-effort shortcuts.
+
+## Quick appearance switch
+
+A small native line icon in the session header’s right-side utilities opens Light, Dark and System, with the current choice checked. It shares the official Appearance setting and stays in sync with it; the host owns persistence and system changes. No emoji, separate preference or new shortcut.
 
 ## /recap
 
