@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.8] - 2026-10-29
+
+- Reuse the annotation/BTW/draft toolbar on visible Better Sidebar assistant answers. Preserve main-session action ownership and independent sidechat source identity; do not resolve sidechat citations against the main transcript. No model, permission, or dependency changes.
+
 ## [1.2.7] - 2026-10-25
 
 - Add a compact appearance switch to the session header’s native right-side utilities slot. Reuse the official Light, Dark and System line icons, native menu/tooltip and selected check.

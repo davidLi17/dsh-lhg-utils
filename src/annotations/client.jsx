@@ -1,5 +1,5 @@
 import { SelectionAsk } from '../client/SelectionAsk';
-import React, { useState, useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
+import React, { useState, useMemo, useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { createRuntime } from './runtime.js';
 import { decodeText } from './core.js';
@@ -91,7 +91,7 @@ function AnnotationList({ notes, face, anchor, close, edit, editable = true, hov
   </Float>;
 }
 
-function Assistant({ inner: Inner, dca: face, btw, sidechat, ...props }) {
+function Assistant({ inner: Inner, dca: face, btw, sidechat, citations = true, ...props }) {
   const sidebar = snapshot(sidechat);
   const [sidechatError, setSidechatError] = useState(null);
   const btwEnabled = useSyncExternalStore(btw.subscribe ?? (() => () => {}), btw.getSnapshot ?? (() => true));
@@ -105,6 +105,7 @@ function Assistant({ inner: Inner, dca: face, btw, sidechat, ...props }) {
   useEffect(() => () => clearTimeout(citationTimer.current), []);
   const nodeKey = String(props.node.key);
   const previewCitation = event => {
+    if (!citations) return;
     const link = event.target.closest(CITATION_SELECTOR);
     if (!link || link.contains(event.relatedTarget)) return;
     clearTimeout(citationTimer.current);
@@ -118,11 +119,13 @@ function Assistant({ inner: Inner, dca: face, btw, sidechat, ...props }) {
     else citationTimer.current = setTimeout(show, 500);
   };
   const leaveCitation = event => {
+    if (!citations) return;
     const link = event.target.closest(CITATION_SELECTOR);
     if (!link || link.contains(event.relatedTarget)) return;
     clearTimeout(citationTimer.current); citationPopup.hover.onPointerLeave();
   };
   const activateCitation = event => {
+    if (!citations) return;
     const link = event.target.closest(CITATION_SELECTOR);
     if (!link || !source.current?.contains(link)) return;
     event.preventDefault(); event.stopPropagation();
@@ -133,6 +136,7 @@ function Assistant({ inner: Inner, dca: face, btw, sidechat, ...props }) {
     face.cite(number, nodeKey);
   };
   useLayoutEffect(() => {
+    if (!citations) return;
     const label = () => {
       for (const link of source.current.querySelectorAll(CITATION_SELECTOR)) {
         const number = citationNumber(link.getAttribute('href'));
@@ -149,7 +153,7 @@ function Assistant({ inner: Inner, dca: face, btw, sidechat, ...props }) {
     const observer = new MutationObserver(label);
     observer.observe(source.current, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [props.node]);
+  }, [props.node, citations]);
   const notes = view.annotations.filter(a => a.nodeKey === nodeKey && a.status === 'pending');
   const selected = () => {
     if (!source.current) return;
@@ -307,7 +311,16 @@ function User({ inner: Inner, dca: face, ...props }) {
 
 export function apply(ctx, btw) {
   const runtime = createRuntime(ctx);
-  const sidechat = createSidechatBridge(ctx);
+  // Sidechat sources use a separate identity but the parent main composer owns
+  // annotations, independent BTW, and the parent-bound sidechat draft action.
+  const Content = ({ children }) => children;
+  const Decorator = ({ parentSessionId, threadId, seq, children }) => {
+    const node = useMemo(() => ({ key: JSON.stringify(['sidechat', threadId, seq]) }), [threadId, seq]);
+    const face = runtime.faceFor(parentSessionId);
+    if (!face) return children;
+    return <Assistant inner={Content} dca={face} btw={btw} sidechat={sidechat} node={node} citations={false}>{children}</Assistant>;
+  };
+  const sidechat = createSidechatBridge(ctx, Decorator);
   const style = document.createElement('style'); style.dataset.plugin = '@davidli/dsh-lhg-btw'; style.dataset.pluginCss = '@davidli/dsh-lhg-btw/annotations.css'; style.textContent = css;
   document.head.append(style);
   ctx.effect(() => () => { runtime.dispose(); style.remove(); });

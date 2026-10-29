@@ -1,5 +1,5 @@
 /** Optional Sidebar capability; the original annotation/BTW flows never depend on it. */
-export function createSidechatBridge(ctx: any): {
+export function createSidechatBridge(ctx: any, decorateAssistant: any): {
     subscribe(listener: any): () => boolean;
     getSnapshot(): any;
 };
