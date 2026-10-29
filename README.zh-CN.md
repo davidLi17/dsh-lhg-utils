@@ -1,4 +1,4 @@
-# DSH-LHG-Utils（v1.2.7）
+# DSH-LHG-Utils（v26.10.29-lhg）
 
 [English](README.md)
 
