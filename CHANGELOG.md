@@ -1,5 +1,11 @@
 # Changelog
 
+## [26.10.31-lhg] - 2026-10-31
+
+- Admit verified DSH 0.2.1-rc.5 hosts, fixing the incompatible/disabled plugin after host upgrade; retain rc.1/rc.2/rc.3 support.
+- Inspect the official rc.5 host implementation and align 35 development host packages and both lockfiles. Command attachment protocol, durable records, subagent lifecycle, chat slots, theme and input APIs remain compatible.
+- Pass 209 functional, 22 annotation, 15 release metadata and 25 built host/client regression tests, typecheck and build. Existing features, settings and identity are unchanged; real Desktop GUI not tested in this run.
+
 ## [1.2.8] - 2026-10-29
 
 - Reuse the annotation/BTW/draft toolbar on visible Better Sidebar assistant answers. Preserve main-session action ownership and independent sidechat source identity; do not resolve sidechat citations against the main transcript. No model, permission, or dependency changes.

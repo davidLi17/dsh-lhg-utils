@@ -35,7 +35,7 @@ it('annotation storage and protocol retain their existing namespace', () => {
 
 it('admits only tested DSH hosts and keeps the isolated matrix aligned', () => {
   const pkg = JSON.parse(read('package.json'))
-  const supported = ['0.2.1-rc.1', '0.2.1-rc.2', '0.2.1-rc.3']
+  const supported = ['0.2.1-rc.1', '0.2.1-rc.2', '0.2.1-rc.3', '0.2.1-rc.5']
   // Without engines.dsh, native DSH admission evaluates these peer ranges.
   assert.equal(pkg.engines.dsh, undefined)
   for (const [name, range] of Object.entries(pkg.peerDependencies)) {
