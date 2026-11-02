@@ -83,6 +83,11 @@ it('无原生 sidebar 服务时保留不可用说明和禁用入口，不误报�
 
 it('实际 Markdown 渲染拒绝 HTML、脚本链接和远程图片，并保护新窗口链接', async () => {
   await render()
+  // Avoid generic Codex theme header / phase selectors without changing our classes.
+  expect(container.querySelector('[data-phase]')).toBeNull()
+  expect(container.querySelector('.btw-bubble')?.getAttribute('data-btw-phase')).toBe('done')
+  expect(container.querySelector('.btw-header')?.tagName).toBe('DIV')
+  expect(container.querySelector('header, [data-phase] header')).toBeNull()
   expect(container.querySelector('script')).toBeNull()
   expect(container.textContent).not.toContain('window.compromised')
   expect(container.querySelector('img')).toBeNull()

@@ -1,5 +1,9 @@
 # Changelog
 
+## [26.11.2-lhg] - 2026-11-02
+
+- Isolate side-question bubble headers from generic Codex theme `header` / `data-phase` selectors, preserving scoped layout and all existing actions. Selectively absorb MichengAI/dsh-btw commit `2ea97bc33f24cc8b6f2080345217ee7c4087defb` (1.3.1); no upstream quote path is reintroduced.
+
 ## [26.10.31-lhg] - 2026-10-31
 
 - Admit verified DSH 0.2.1-rc.5 hosts, fixing the incompatible/disabled plugin after host upgrade; retain rc.1/rc.2/rc.3 support.
