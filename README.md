@@ -1,4 +1,4 @@
-# DSH-LHG-Utils (v26.11.2-lhg)
+# DSH-LHG-Utils (v26.11.7-lhg)
 
 [简体中文](README.zh-CN.md)
 

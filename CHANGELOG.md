@@ -1,5 +1,9 @@
 # Changelog
 
+## [26.11.7-lhg] - 2026-11-07
+
+- Preserve side-question startup on plain-HTTP LAN addresses without `crypto.randomUUID`, using cryptographically random UUID v4 values. Selectively absorb MichengAI/dsh-btw `226b868acf157859d1cdc1f1d8cb00651f4083da` and its three regression tests; retain all LHG sidebar, draft, image and annotation integrations.
+
 ## [26.11.2-lhg] - 2026-11-02
 
 - Isolate side-question bubble headers from generic Codex theme `header` / `data-phase` selectors, preserving scoped layout and all existing actions. Selectively absorb MichengAI/dsh-btw commit `2ea97bc33f24cc8b6f2080345217ee7c4087defb` (1.3.1); no upstream quote path is reintroduced.

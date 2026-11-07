@@ -1,5 +1,13 @@
 # v1.2.0 implementation and verification
 
+## 26.11.7-lhg selective maintenance (2026-11-07)
+
+- Base: `be223fb0322db3142e16701c7b714682fd572b9d`; upstream BTW `096619904ac7f9bbc50c808224803cbb44d8b978` (1.3.5), annotations `ce3866ab877de7f402f1ee121ed858cd4871c3e7` (unchanged). Apache-2.0 and bundled MIT notices retained.
+- Adapt only BTW `226b868acf157859d1cdc1f1d8cb00651f4083da`: cryptographically random UUID v4 generation supports HTTP LAN clients without `crypto.randomUUID`. Keep the fork's independent sidebar-open lifecycle and all annotation/draft/image integrations. The upstream rc.5 attachment mapping is already present; no unrelated host-version or workflow changes.
+- `npm ci --ignore-scripts` with a writable temporary cache succeeded. Typecheck, 212 functional tests, 22 annotation tests, 15 release/identity tests and build passed. Re-running 212 tests with `DSH_BTW_BUNDLE=1` against the generated client/server bundle passed.
+- Package content check passed (51 files). A separate npm project installed the actual archive with install scripts disabled; identity, exports, patch, license files, UUID implementation and sidebar integration were checked. No package archive is uploaded or published.
+- No real Desktop/browser visual acceptance is claimed. Host compatibility remains rc.1/rc.2/rc.3/rc.5, with this run's runtime tests on rc.5.
+
 ## Baselines and inspected sources
 
 - LHG Utils implementation starts at `davidLi17/dsh-btw` main `bc915649b4bdab6529f19fe59a735050ac134965` (v1.1.3), fetched before editing.

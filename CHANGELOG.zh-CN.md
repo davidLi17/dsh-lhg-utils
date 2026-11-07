@@ -1,5 +1,9 @@
 # 更新日志
 
+## [26.11.7-lhg] - 2026-11-07
+
+- 修复局域网明文 HTTP 缺少 `crypto.randomUUID` 时旁问无法启动，使用安全随机数生成 UUID v4。选择性吸收 MichengAI/dsh-btw `226b868acf157859d1cdc1f1d8cb00651f4083da` 及三项回归测试，保留 LHG 侧聊、草稿、图片与批注联动。
+
 ## [26.11.2-lhg] - 2026-11-02
 
 - 隔离旁问气泡标题 DOM，避免 Codex 主题通用 `header` / `data-phase` 选择器误命中；保留原样式类、布局和所有操作。功能等价吸收 MichengAI/dsh-btw 1.3.1 中 `2ea97bc33f24cc8b6f2080345217ee7c4087defb`，不重引入旧 QuoteDock。
