@@ -1,3 +1,4 @@
+import { installHostToolExecutor } from './host-tool-fixtures'
 import { Context, Service } from '@deepseek-ai/cordis'
 import AgentRegistry from '@deepseek-ai/dsh-agent'
 import AgentLoop from '@deepseek-ai/dsh-agent-loop'
@@ -54,6 +55,11 @@ class MemoryWorkingDirectory extends Service {
 // AgentRegistry.resume, AgentLoop and settlement routing.
 function memorySessions(ctx: Context) {
   const records = new Map<string, { header: SessionHeader; inheritedEventCount: ReturnType<typeof SessionLogOffset>; events: SessionEvent[] }>()
+  // The real persistence backend owns live appends in every supported host.
+  // Constructor snapshots alone omit the child's prompt, answer and follow-ups.
+  ctx.on('session/event', (session, event) => {
+    records.get(session.id)?.events.push(structuredClone(event))
+  })
   const handle = (id: string) => {
     const record = records.get(id)!
     return {
@@ -82,6 +88,7 @@ it('真实 fork 继承已完成上下文、独立回答并可取消，主任务�
   try {
     new MemoryWorkingDirectory(ctx)
     for (const service of [LlmRuntime, SessionStore, SessionProjectionRegistry, SystemPrompt, ToolRuntime, AgentRegistry, CommandRuntime]) await ctx.plugin(service).await()
+    await installHostToolExecutor(ctx)
     await ctx.plugin(AgentLoop, { agents: [] }).await()
     await ctx.plugin(SubagentRuntime).await()
     await ctx.plugin(Fork, { providerName: 'fork' }).await()
@@ -141,6 +148,9 @@ it('真实 fork 继承已完成上下文、独立回答并可取消，主任务�
     await ctx.subagents.waitForChildren(parent)
     await parent.whenIdle()
     expect(adapter.requests).toHaveLength(5) // child only, no sixth parent request
+    const resumedMessages = JSON.stringify(adapter.requests.at(-1)!.messages)
+    for (const text of ['主任务背景', '旁问专属问题', '选中时固定的正文片段', '独立旁问答案', '继续旁问，不要唤醒主任务']) expect(resumedMessages).toContain(text)
+    expect(resumedMessages).not.toContain('等待取消')
     expect(parent.status).toBe('idle')
     expect(parent.session.ownEvents().filter(event => event.type === 'turn/start')).toHaveLength(parentTurns)
     expect(ctx.agents.get(childId)).toBeUndefined() // resumed activation also cleaned up
@@ -150,6 +160,8 @@ it('真实 fork 继承已完成上下文、独立回答并可取消，主任务�
     }, new AbortController().signal)
     await ctx.subagents.waitForChildren(parent)
     expect(adapter.requests).toHaveLength(6)
+    const resumedAgain = JSON.stringify(adapter.requests.at(-1)!.messages)
+    for (const text of ['旁问专属问题', '独立旁问答案', '继续旁问，不要唤醒主任务', '再追问一次，同一旁问继续']) expect(resumedAgain).toContain(text)
     expect(parent.session.ownEvents().filter(event => event.type === 'turn/start')).toHaveLength(parentTurns)
     expect(JSON.parse((await execute(`/${CHILD_COMMAND} request01`))!.result.text!)).toEqual(address)
     expect([...records.values()].filter(row => row.header.origin === 'subagent')).toHaveLength(2)
@@ -180,6 +192,7 @@ it('旁问完成通知不打开主回合，用户下一条消息才消费参考�
   const ctx = new Context()
   try {
     for (const service of [LlmRuntime, SessionStore, SessionProjectionRegistry, SystemPrompt, ToolRuntime, AgentRegistry]) await ctx.plugin(service).await()
+    await installHostToolExecutor(ctx)
     await ctx.plugin(AgentLoop, { agents: [] }).await()
     const adapter = new AnswerAdapter()
     ctx.llm.registerAdapter(['test'], adapter)

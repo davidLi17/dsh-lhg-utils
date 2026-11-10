@@ -1,3 +1,4 @@
+import { installHostToolExecutor, executeHostTool } from './host-tool-fixtures'
 import { Context, Service } from '@deepseek-ai/cordis'
 import AgentRegistry from '@deepseek-ai/dsh-agent'
 import AgentLoop from '@deepseek-ai/dsh-agent-loop'
@@ -48,6 +49,7 @@ describe('BTW 工具执行继承宿主权限且不污染父会话', () => {
       for (const service of [LlmRuntime, SessionStore, SessionProjectionRegistry, SystemPrompt, ToolRuntime, AgentRegistry, CommandRuntime]) {
         await ctx.plugin(service).await()
       }
+      await installHostToolExecutor(ctx)
       await ctx.plugin(AgentLoop, { agents: [] }).await()
       await ctx.plugin(SubagentRuntime).await()
       await ctx.plugin(Fork, { providerName: 'fork' }).await()
@@ -122,7 +124,7 @@ describe('BTW 工具执行继承宿主权限且不污染父会话', () => {
         expect(ctx.approval.overrideOf(parent.session)).toBeUndefined()
       }
       if (policy === 'guard') {
-        const stillDenied = await ctx.tools.execute({ name: 'read_file', callId: ToolCallId('after-dispose'), arguments: { path: 'blocked.json' }, signal: new AbortController().signal })
+        const stillDenied = await executeHostTool(ctx, { name: 'read_file', callId: ToolCallId('after-dispose'), arguments: { path: 'blocked.json' }, signal: new AbortController().signal })
         expect(stillDenied.isError).toBe(true)
         expect(JSON.stringify(stillDenied)).toContain('HOST_POLICY_DENIED')
         expect(executed).toEqual(['parent.json'])
@@ -136,6 +138,7 @@ describe('BTW 工具执行继承宿主权限且不污染父会话', () => {
     try {
       new MemoryWorkingDirectory(ctx)
       for (const service of [LlmRuntime, SessionStore, SessionProjectionRegistry, SystemPrompt, ToolRuntime, AgentRegistry, CommandRuntime]) await ctx.plugin(service).await()
+      await installHostToolExecutor(ctx)
       await ctx.plugin(AgentLoop, { agents: [] }).await()
       await ctx.plugin(SubagentRuntime).await()
       await ctx.plugin(Fork, { providerName: 'fork' }).await()

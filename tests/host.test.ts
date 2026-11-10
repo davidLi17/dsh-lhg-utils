@@ -1,3 +1,4 @@
+import { installHostToolExecutor, executeHostTool } from './host-tool-fixtures'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -31,6 +32,7 @@ describe(`DSH ${runtimeVersion} 真实运行时`, () => {
     ctx.provide('sessions', { list: () => [] })
     ctx.provide('systemPrompt', { tools: () => () => {}, section: () => () => {}, getSectionOrder: () => 0 })
     new ToolRuntime(ctx)
+    await installHostToolExecutor(ctx, runtimeRoot)
     const commands = new Map<string, CommandDefinition>()
     ctx.provide('commands', { register: (command: CommandDefinition) => { commands.set(command.name, command); return () => { commands.delete(command.name) } } })
     ctx.provide('subagents', { getProvider: () => undefined })
@@ -57,6 +59,7 @@ describe(`DSH ${runtimeVersion} 真实运行时`, () => {
     ctx.provide('sessions', { list: () => [] })
     ctx.provide('systemPrompt', { tools: () => () => {}, section: () => () => {}, getSectionOrder: () => 0 })
     new ToolRuntime(ctx)
+    await installHostToolExecutor(ctx, runtimeRoot)
     const commands = new Map<string, CommandDefinition>()
     ctx.provide('commands', { register: (command: CommandDefinition) => { commands.set(command.name, command); return () => { commands.delete(command.name) } } })
 
@@ -99,7 +102,7 @@ describe(`DSH ${runtimeVersion} 真实运行时`, () => {
     // Legacy child-local tools remain executable, subject to host policy.
     const currentScope = scope!
     currentScope.ctx.tools.register({ name: 'legacy_tool', description: '测试工具', parameters: { type: 'object', properties: {} }, output: { schema: { type: 'string' }, render: (_args, v) => [{ type: 'text', text: String(v) }] }, execute: vi.fn(async () => 'allowed') })
-    const blocked = await ctx.tools.execute({ name: 'legacy_tool', callId: 'test-call' as never, arguments: {}, agent: child, signal: new AbortController().signal })
+    const blocked = await executeHostTool(ctx, { name: 'legacy_tool', callId: 'test-call' as never, arguments: {}, agent: child, signal: new AbortController().signal })
     expect(blocked.isError).not.toBe(true)
     expect(JSON.stringify(blocked.content)).toContain('allowed')
 
@@ -142,6 +145,7 @@ describe(`DSH ${runtimeVersion} 真实运行时`, () => {
     ctx.provide('sessions', { list: () => [] })
     ctx.provide('systemPrompt', { tools: () => () => {}, section: () => () => {}, getSectionOrder: () => 0 })
     new ToolRuntime(ctx)
+    await installHostToolExecutor(ctx, runtimeRoot)
     const commands = new Map<string, CommandDefinition>()
     ctx.provide('commands', { register: (command: CommandDefinition) => { commands.set(command.name, command); return () => { commands.delete(command.name) } } })
     let finishCleanup!: () => void
@@ -173,17 +177,17 @@ describe(`DSH ${runtimeVersion} 真实运行时`, () => {
     expect(commands.has(RUN_COMMAND)).toBe(false)
     expect((await answer)?.kind).toBe('error')
     expect(dispose).toHaveBeenCalledTimes(1)
-    const blocked = await ctx.tools.execute({ name: 'orphan_tool', callId: 'orphan' as never, arguments: {}, agent: child, signal: new AbortController().signal })
+    const blocked = await executeHostTool(ctx, { name: 'orphan_tool', callId: 'orphan' as never, arguments: {}, agent: child, signal: new AbortController().signal })
     expect(blocked.isError).toBe(true)
     expect(body).not.toHaveBeenCalled()
     finishCleanup()
     await vi.advanceTimersByTimeAsync(0)
-    const released = await ctx.tools.execute({ name: 'orphan_tool', callId: 'released' as never, arguments: {}, agent: child, signal: new AbortController().signal })
+    const released = await executeHostTool(ctx, { name: 'orphan_tool', callId: 'released' as never, arguments: {}, agent: child, signal: new AbortController().signal })
     expect(released.isError).toBe(true)
     expect(JSON.stringify(released)).toContain('HOST_POLICY_DENIED')
     expect(body).not.toHaveBeenCalled()
     await releaseHostGuard()
-    const allowed = await ctx.tools.execute({ name: 'orphan_tool', callId: 'allowed' as never, arguments: {}, agent: child, signal: new AbortController().signal })
+    const allowed = await executeHostTool(ctx, { name: 'orphan_tool', callId: 'allowed' as never, arguments: {}, agent: child, signal: new AbortController().signal })
     expect(allowed.isError).not.toBe(true)
     expect(body).toHaveBeenCalledTimes(1)
     await scope!.dispose()

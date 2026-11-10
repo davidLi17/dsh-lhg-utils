@@ -1,5 +1,11 @@
 # Changelog
 
+## [26.11.10-lhg] - 2026-11-10
+
+- Admit DSH 0.2.2-rc.1 after inspecting its official release source and testing its real host APIs. Preserve the explicit 0.2.1 candidate-version support list.
+- Align development host packages, Cordis 4.1 and Schemastery 3.19; update both lockfiles and generated declarations. Adapt regression fixtures to the official standalone native tool executor, batch calls and persistence event routing rather than mocking permission checks.
+- Preserve independent side questions and continuation without waking the main conversation, annotations and citation navigation, native effort shortcuts, optional voice, and Sidebar selection-to-draft/image behavior. No host security, workflow permissions, saved settings or plugin identity changes.
+
 ## [26.11.7-lhg] - 2026-11-07
 
 - Preserve side-question startup on plain-HTTP LAN addresses without `crypto.randomUUID`, using cryptographically random UUID v4 values. Selectively absorb MichengAI/dsh-btw `226b868acf157859d1cdc1f1d8cb00651f4083da` and its three regression tests; retain all LHG sidebar, draft, image and annotation integrations.

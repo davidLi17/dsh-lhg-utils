@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 const lock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8'))
-const supported = ['0.2.1-rc.1', '0.2.1-rc.2', '0.2.1-rc.3', '0.2.1-rc.5']
+const supported = ['0.2.1-rc.1', '0.2.1-rc.2', '0.2.1-rc.3', '0.2.1-rc.5', '0.2.2-rc.1']
 const versions = process.argv.slice(2)
 if (!versions.length) versions.push(...supported)
 if (versions.some(version => !supported.includes(version))) throw new Error('请使用指定的 DSH 候选版本')
@@ -30,6 +30,10 @@ for (const version of versions) {
       .map(([name, range]) => [name, lock.packages[`node_modules/${name}`]?.version ?? range]))
     // 内部辅助包由各版依赖图决定，不在这里钉死。
     const internal = new Set(['api-session-controller', 'subagent-in-process-driver', 'subagent-spawn-in-process', 'session-persistence', 'util-time', 'ptc-runtime'].map(name => `@deepseek-ai/dsh-${name}`))
+    // rc.1 uses a standalone executor; earlier hosts keep their integrated one.
+    if (version.startsWith('0.2.1-')) internal.add('@deepseek-ai/dsh-tool-executor-native')
+    dependencies['@deepseek-ai/cordis'] = version.startsWith('0.2.1-') ? '4.0.5' : '4.1.0'
+    dependencies['@deepseek-ai/cordis-plugin-loader'] = version.startsWith('0.2.1-') ? '1.0.6' : '1.1.0'
     let pending = [...new Set([
       ...Object.keys(pkg.devDependencies).filter(name => name.startsWith('@deepseek-ai/dsh-') && !internal.has(name)),
       ...pkg.dsh.client.inject,
@@ -81,6 +85,7 @@ for (const version of versions) {
       if (!seen.has(name)) throw new Error(`客户端清单引用了未验证的宿主包：${name}`)
     }
     run(['node_modules/vitest/vitest.mjs', 'run'])
+    run(['scripts/test-loader-compatibility.mjs'])
     results.push({ version, status: 'passed', hostPackages: seen.size, log })
     console.log(`DSH ${version}：功能测试通过（${seen.size} 个同版宿主包，开发编译使用最新版）`)
   } catch (error) {
