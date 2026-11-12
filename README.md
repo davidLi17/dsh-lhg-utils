@@ -1,4 +1,4 @@
-# DSH-LHG-Utils (v26.11.7-lhg)
+# DSH-LHG-Utils (v26.11.12-lhg)
 
 [简体中文](README.zh-CN.md)
 
@@ -46,7 +46,7 @@ These CLI operations in DSH `0.2.1-rc.1` / `rc.2` do not delete `cordis.patch.ym
 - Existing annotation storage keys and protocols are unchanged. Data remains available in the same client, site, and session; do not clear site storage. Cross-client migration is not automatic.
 - Isolated package installation/migration checks do not replace real Desktop/Web acceptance; see the status below.
 
-Supported hosts: DSH `0.2.1-rc.1`, `0.2.1-rc.2`, `0.2.1-rc.3`, `0.2.1-rc.5`, and `0.2.2-rc.1`. Earlier `0.2.0` hosts lack the durable plugin-record APIs required by the retained v1.1.3 BTW notification isolation. Upgrade DSH before installing v1.2.1; saved annotations and plugin identity remain unchanged.
+Supported hosts: DSH `0.2.1-rc.1`, `0.2.1-rc.2`, `0.2.1-rc.3`, `0.2.1-rc.5`, `0.2.2-rc.1`, and `0.2.2-rc.2`. Earlier `0.2.0` hosts lack the durable plugin-record APIs required by the retained v1.1.3 BTW notification isolation. Upgrade DSH before installing v1.2.1; saved annotations and plugin identity remain unchanged.
 
 ## Modules
 
