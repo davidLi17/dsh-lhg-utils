@@ -1,5 +1,15 @@
 # v1.2.0 implementation and verification
 
+## 26.11.12-lhg DSH 0.2.2-rc.2 compatibility
+
+- Base remote main: `ac18cfd4684df9c82e1bbf25d13d5ec834b26d87`. Preserve existing customization, plugin identity and stored data.
+- Supply flattened parent/prompt fields for rc.2 subagent activation while retaining the nested request used by earlier hosts. Continue using host permission handling, cancellation and settlement isolation.
+- Match the native composer dock inset calculation; preserve mobile actions and theme scoping.
+- Final aggregate check: TypeScript, 214 functional tests, 22 annotation tests, 15 release tests, and build passed. Six isolated host graphs (0.2.1-rc.1/2/3/5 and 0.2.2-rc.1/2) each passed 214 tests against the same server bundle, plus actual Loader update/disposal checks. rc.2 graph contains 76 aligned host packages.
+- Real-host regression fixtures verify resumed side-question history and ancestry through host projections. Model outputs and storage remain controlled test fixtures; this is not live-provider acceptance.
+- Package preparation passed. User Desktop, real microphone and live provider acceptance were not performed. Remote publication/CI are verified separately after push, not inferred from these local results.
+
+
 ## 26.11.10-lhg DSH 0.2.2-rc.1 compatibility (2026-11-10)
 
 - Base main: `bea5e8193c2073400b58950328a5245f6d756a8b`. Coordinated with the concurrent Sidebar maintenance task; it had no Utils changes or publication. All user customizations, plugin IDs, persisted namespaces and licenses remain intact.

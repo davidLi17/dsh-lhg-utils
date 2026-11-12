@@ -1,5 +1,11 @@
 # Changelog
 
+## [26.11.12-lhg] - 2026-11-12
+
+- Support the flattened DSH 0.2.2-rc.2 subagent activation API while retaining the earlier nested request shape. Preserve host-owned permissions, independent BTW tools, continuation and cancellation, and main-task settlement isolation.
+- Align the BTW answer dock with the native four-inset geometry; preserve mobile actions, theme isolation, annotation behavior and reasoning-effort shortcuts.
+- Add the explicit rc.2 peer range and isolated published-package compatibility graph. Continuation regressions hydrate real host projections for ancestry checks.
+
 ## [26.11.10-lhg] - 2026-11-10
 
 - Admit DSH 0.2.2-rc.1 after inspecting its official release source and testing its real host APIs. Preserve the explicit 0.2.1 candidate-version support list.
