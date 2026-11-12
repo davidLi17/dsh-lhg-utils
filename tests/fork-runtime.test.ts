@@ -1,6 +1,6 @@
 import { installHostToolExecutor } from './host-tool-fixtures'
 import { Context, Service } from '@deepseek-ai/cordis'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
+import AgentRegistry, { type Agent } from '@deepseek-ai/dsh-agent'
 import AgentLoop from '@deepseek-ai/dsh-agent-loop'
 import CommandRuntime from '@deepseek-ai/dsh-commands'
 import LlmRuntime, { createUserMessage, LlmAdapter } from '@deepseek-ai/dsh-llm'
@@ -14,6 +14,17 @@ import ToolRuntime from '@deepseek-ai/dsh-tools'
 import { expect, it } from 'vitest'
 import * as sourcePlugin from '../src/index'
 import { CHILD_COMMAND, CLOSE_COMMAND, RUN_COMMAND } from '../src/shared'
+
+// rc.2 renamed the real host work join API; preserve earlier runtime graphs.
+async function waitForHostChildren(runtime: SubagentRuntime, parent: Agent): Promise<void> {
+  const host = runtime as unknown as {
+    waitForTreeWork?: (root: Agent) => Promise<boolean>
+    waitForChildren?: (root: Agent) => Promise<unknown>
+  }
+  if (typeof host.waitForTreeWork === 'function') await host.waitForTreeWork(parent)
+  else if (typeof host.waitForChildren === 'function') await host.waitForChildren(parent)
+  else throw new Error('Host exposes no supported subagent work join API')
+}
 
 // 仅模型输出可控；AgentLoop、fork、命令、工具限制和生命周期均使用真实宿主。
 class AnswerAdapter extends LlmAdapter {
@@ -78,7 +89,19 @@ function memorySessions(ctx: Context) {
     stat: async (id: string) => records.has(id) ? { header: records.get(id)!.header, revision: 'test' } : undefined,
   })
   ctx.provide('sessionQuery', {
-    observeSession: async (id: string) => ({ ...records.get(id)!, [Symbol.dispose]() {} }),
+    observeSession: async (id: string) => {
+      const record = records.get(id)!
+      const live = ctx.sessions.get(SessionId(id))
+      // Match official session-query's prepare/hydrate path. Ancestry and
+      // catalog membership must come from real projections, never fabricated rows.
+      const session = live ?? ctx.sessions.prepare(SessionId(id), {
+        meta: structuredClone(record.header), seed: structuredClone(record.events),
+        inheritedEventCount: record.inheritedEventCount,
+      })
+      const projections = live ? ctx.sessionProjections.snapshot(session)
+        : ctx.sessionProjections.hydrate(session, {}, record.events, SessionLogOffset(0))
+      return { ...record, projections, [Symbol.dispose]() {} }
+    },
   })
   return records
 }
@@ -142,10 +165,12 @@ it('真实 fork 继承已完成上下文、独立回答并可取消，主任务�
     const childId = SessionId(address.childSessionId)
     expect(ctx.agents.get(childId)).toBeUndefined()
     const parentTurns = parent.session.ownEvents().filter(event => event.type === 'turn/start').length
-    await ctx.subagents.prompt({ parentSessionId: parent.id, childSessionId: childId,
-      requestId: 'side-followup' as never, mode: 'continuable', delivery: 'queue', content: [{ type: 'text', text: '继续旁问，不要唤醒主任务' }],
+    // rc.2 only requires childSessionId; older hosts use parent/mode too.
+    const followupAddress = { parentSessionId: parent.id, childSessionId: childId, mode: 'continuable' as const }
+    await ctx.subagents.prompt({ ...followupAddress,
+      requestId: 'side-followup' as never, delivery: 'queue', content: [{ type: 'text', text: '继续旁问，不要唤醒主任务' }],
     }, new AbortController().signal)
-    await ctx.subagents.waitForChildren(parent)
+    await waitForHostChildren(ctx.subagents, parent)
     await parent.whenIdle()
     expect(adapter.requests).toHaveLength(5) // child only, no sixth parent request
     const resumedMessages = JSON.stringify(adapter.requests.at(-1)!.messages)
@@ -155,10 +180,10 @@ it('真实 fork 继承已完成上下文、独立回答并可取消，主任务�
     expect(parent.session.ownEvents().filter(event => event.type === 'turn/start')).toHaveLength(parentTurns)
     expect(ctx.agents.get(childId)).toBeUndefined() // resumed activation also cleaned up
     expect(parent.inbox.nextStep.some(message => message.source?.kind === 'subagent-settled')).toBe(true)
-    await ctx.subagents.prompt({ parentSessionId: parent.id, childSessionId: childId,
-      requestId: 'side-followup-again' as never, mode: 'continuable', delivery: 'queue', content: [{ type: 'text', text: '再追问一次，同一旁问继续' }],
+    await ctx.subagents.prompt({ ...followupAddress,
+      requestId: 'side-followup-again' as never, delivery: 'queue', content: [{ type: 'text', text: '再追问一次，同一旁问继续' }],
     }, new AbortController().signal)
-    await ctx.subagents.waitForChildren(parent)
+    await waitForHostChildren(ctx.subagents, parent)
     expect(adapter.requests).toHaveLength(6)
     const resumedAgain = JSON.stringify(adapter.requests.at(-1)!.messages)
     for (const text of ['旁问专属问题', '独立旁问答案', '继续旁问，不要唤醒主任务', '再追问一次，同一旁问继续']) expect(resumedAgain).toContain(text)

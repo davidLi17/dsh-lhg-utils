@@ -55,6 +55,8 @@ function applyBtw(ctx: Context): void {
         provider: string
         label: string
         childId: ReturnType<typeof SessionId>
+        parent: Agent
+        prompt: readonly { type: string; text: string }[]
         request: { parent: Agent; prompt: readonly { type: string; text: string }[] }
         signal: AbortSignal
         delivery: 'caller'
@@ -88,6 +90,10 @@ function applyBtw(ctx: Context): void {
           provider: 'fork',
           label,
           childId,
+          // rc.2 flattened SubagentActivationSpec; earlier hosts read request.
+          // Both local APIs ignore unknown fields; keep parent/prompt in both shapes.
+          parent: request.context as Agent,
+          prompt: [{ type: 'text', text: promptText }],
           request: {
             parent: request.context as Agent,
             prompt: [{ type: 'text', text: promptText }],
