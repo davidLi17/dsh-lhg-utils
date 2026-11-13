@@ -1,5 +1,10 @@
 # Changelog
 
+## [26.11.14-lhg] - 2026-11-14
+
+- Admit DSH 0.2.2-rc.3 after isolated runtime and loader regression, fixing the unsupported-version block. Existing side questions, annotations, speech and shortcuts are unchanged.
+- Extend the exact host matrix and RPC protocol fixture; no version exemption or broad wildcard is introduced.
+
 ## [26.11.12-lhg] - 2026-11-12
 
 - Support the flattened DSH 0.2.2-rc.2 subagent activation API while retaining the earlier nested request shape. Preserve host-owned permissions, independent BTW tools, continuation and cancellation, and main-task settlement isolation.

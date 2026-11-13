@@ -1,5 +1,14 @@
 # v1.2.0 implementation and verification
 
+## 26.11.14-lhg DSH 0.2.2-rc.3 compatibility
+
+- Base remote main: `cea58aeccf38b2cd22131087ba8206dc3bc3a059`. Official tag `dsh-v0.2.2-rc.3`: `38a6a5c965aa99ab525161efb7cc5cf1fe62fced`.
+- Compared rc.2 and rc.3 official source: the used command RPC, session records, subagent lifecycle, tool registry, chat composer, shortcuts and model-selection contracts are unchanged. Sidebar/workspace slot additions and icon exports do not require a change to this plugin's implementation.
+- Reproduced native admission rejection of the previous exact peer range using the official rc.3 compatibility evaluator. The candidate admits rc.3 without exemptions and continues rejecting untested rc.4.
+- `npm run check`: typecheck, 214 functional tests, 22 annotation tests, 15 release tests and build passed. `npm run test:compat -- 0.2.2-rc.3`: 214 tests and actual Loader 1.1.0 update/disposal checks passed with 76 pinned rc.3 host packages; an additional rc.3 typecheck passed. The RPC fixture now explicitly recognizes the verified, unchanged `submittedAttachments` field.
+- Server/client distributables remain byte-identical to the previous release. Metadata and version are synchronized with the npm lock; pnpm dependency resolutions are unchanged.
+- Package gate: 51 files passed. Official DSH rc.3 CLI with pnpm 11.25.0 installed the archive into a fresh cloud Web profile with no version exemptions. Remote CI is checked after publication; no Desktop GUI, physical microphone or live provider acceptance is claimed.
+
 ## 26.11.12-lhg DSH 0.2.2-rc.2 compatibility
 
 - Base remote main: `ac18cfd4684df9c82e1bbf25d13d5ec834b26d87`. Preserve existing customization, plugin identity and stored data.
