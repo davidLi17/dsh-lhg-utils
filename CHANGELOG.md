@@ -1,5 +1,10 @@
 # Changelog
 
+## [26.11.14-lhg.2] - 2026-11-14
+
+- Suppress the native quote-selection popup while LHG Utils is active, leaving the selection and native history rendering intact. Disabling the plugin restores the native quote action.
+- Verify keyed slot shadowing in either load order and the local dismiss behavior against DSH rc.3.
+
 ## [26.11.14-lhg] - 2026-11-14
 
 - Admit DSH 0.2.2-rc.3 after isolated runtime and loader regression, fixing the unsupported-version block. Existing side questions, annotations, speech and shortcuts are unchanged.

@@ -1,3 +1,4 @@
+import { applyNativeQuotePopupSuppression } from './native-quote-popup'
 import { applyRecap } from './recap'
 import { apply as applyEffortShortcuts } from './effort-shortcuts'
 import { moduleLifecycle, moduleSettings, SETTINGS_NAMESPACE } from '../module-settings'
@@ -126,6 +127,7 @@ type BtwBridge = {
 
 export async function apply(ctx: Context, config: unknown = {}): Promise<void> {
   applyRecap(ctx)
+  applyNativeQuotePopupSuppression(ctx)
   ctx.effect(() => ctx.locale.register(NS, { zh, en }))
   applyThemeSwitcher(ctx)
   const sessions = ctx.get('sessions') as unknown as ISessions
