@@ -1,5 +1,9 @@
 # Changelog
 
+## [26.11.18-lhg] - 2026-11-18
+
+- Admit DSH 0.2.2-rc.4 after isolated host-package, real-loader and clean-profile installation checks. Retain every earlier supported host and existing custom behavior. No UI or runtime implementation changes.
+
 ## [26.11.14-lhg.2] - 2026-11-14
 
 - Suppress the native quote-selection popup while LHG Utils is active, leaving the selection and native history rendering intact. Disabling the plugin restores the native quote action.
