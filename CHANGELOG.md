@@ -1,5 +1,9 @@
 # Changelog
 
+## [26.11.19-lhg] - 2026-11-19
+
+- Admit verified DSH 0.2.2-rc.5. Keep prior exact host support and all existing custom behavior. This update does not include the upstream reconnection feature.
+
 ## [26.11.18-lhg] - 2026-11-18
 
 - Admit DSH 0.2.2-rc.4 after isolated host-package, real-loader and clean-profile installation checks. Retain every earlier supported host and existing custom behavior. No UI or runtime implementation changes.
